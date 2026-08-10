@@ -1,0 +1,22 @@
+title = "nm-secrets gitleaks config"
+
+# The test suite needs a fixed 32-byte key to produce reproducible vectors. The
+# value in tests/synthetic_key_material.py is the ASCII string
+# "nm-secrets-synthetic-test-key!!!" and its Base64 form. It is synthetic and
+# has never been a real key.
+#
+# The exemption below is deliberately narrow: it matches the exact synthetic
+# strings only, NOT the file path. Every file, including the fixture, stays
+# scanned for any other secret. Do not replace this with a `paths` allowlist,
+# which would disable scanning for a whole file.
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Synthetic nm-secrets test key material, not a real secret."
+regexTarget = "match"
+regexes = [
+    '''bm0tc2VjcmV0cy1zeW50aGV0aWMtdGVzdC1rZXkhISE=''',
+    '''nm-secrets-synthetic-test-key!!!''',
+]
