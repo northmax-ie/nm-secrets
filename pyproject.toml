@@ -45,8 +45,8 @@ include = [
     "/src",
     "/tests",
     "/docs",
-    "/README.md",
-    "/CHANGELOG.md",
+#    "/README.md",
+#    "/CHANGELOG.md",
     "/LICENSE",
     "/pyproject.toml",
 ]
