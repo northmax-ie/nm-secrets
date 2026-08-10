@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "nm-secrets"
 version = "0.1.0"
 description = "Versioned, AAD-bound encrypted envelopes for Python applications."
-readme = "README.md"
+#readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
 authors = [{ name = "NorthMax Integration Ltd" }]
@@ -28,7 +28,7 @@ dependencies = [
 [project.urls]
 Repository = "https://github.com/northmax-ie/nm-secrets"
 Issues = "https://github.com/northmax-ie/nm-secrets/issues"
-Documentation = "https://github.com/northmax-ie/nm-secrets/tree/main/docs"
+#Documentation = "https://github.com/northmax-ie/nm-secrets/tree/main/docs"
 
 [project.optional-dependencies]
 dev = [
