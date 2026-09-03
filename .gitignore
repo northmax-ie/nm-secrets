@@ -12,3 +12,5 @@ dist/
 .coverage
 .coverage.*
 htmlcov/
+.claude/
+CLAUDE.md
