@@ -41,8 +41,12 @@ def discover_version(value: str) -> str:
     structure differs from v1. Raises SecretFormatError if the value is not a
     discoverable envelope. Does not validate anything past the version.
     """
-    if len(value) > MAX_ENVELOPE_CHARS:
-        raise SecretFormatError("envelope exceeds maximum length") from None
+    # Deliberately no length check here. MAX_ENVELOPE_CHARS is a v1 envelope-layer
+    # constant enforced in ``parse``; it is derived from the v1 aes256gcm payload
+    # and must not leak into the permanently frozen, cross-version discovery rule.
+    # A future version is entitled to a different bound, so an oversized value
+    # carrying an unsupported version must remain discoverable (and drive
+    # ``requires_reencryption`` to True). Do not reintroduce the cap here.
     if not value.startswith(_PREFIX) or not value.endswith(_TERMINATOR):
         raise SecretFormatError("value is not an envelope") from None
 

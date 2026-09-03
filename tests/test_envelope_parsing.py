@@ -66,9 +66,23 @@ def test_requires_reencryption_true_on_v2_structured_envelope(handler):
     assert handler.requires_reencryption("ENC[v2:some-entirely-new-shape]") is True
 
 
-def test_requires_reencryption_rejects_over_length_envelope(handler):
+def test_requires_reencryption_true_on_oversized_unsupported_version(handler):
+    # Over-length does not stop version discovery: the 90000 limit is a v1
+    # concern, not a discovery rule. An unsupported future version stays
+    # discoverable regardless of length, so the operator learns it needs
+    # migration rather than seeing it misreported as malformed.
+    oversized_v2 = "ENC[v2:" + "A" * (envelope_module.MAX_ENVELOPE_CHARS + 1) + "]"
+    assert handler.requires_reencryption(oversized_v2) is True
+
+
+def test_requires_reencryption_rejects_oversized_v1_envelope(handler):
+    # A v1 value over the limit is invalid and raises. The cap is enforced in
+    # parse, reached here on the current-version branch.
+    oversized_v1 = (
+        "ENC[v1:aes256gcm:key_1:" + "A" * (envelope_module.MAX_ENVELOPE_CHARS + 1) + "]"
+    )
     with pytest.raises(SecretFormatError):
-        handler.requires_reencryption("ENC[" + "A" * 90001 + "]")
+        handler.requires_reencryption(oversized_v1)
 
 
 def test_requires_reencryption_rejects_missing_version_delimiter(handler):

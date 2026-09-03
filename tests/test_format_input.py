@@ -1,5 +1,7 @@
 """Format and input handling."""
 
+import base64
+
 import pytest
 
 from nm_secrets import SecretDecryptionError, SecretFormatError
@@ -32,10 +34,12 @@ def test_corrupt_ciphertext_fails(handler):
 def test_invalid_tag_fails(handler):
     envelope = handler.encrypt("hunter2", name="db_password")
     payload = _payload_of(envelope)
-    # The tag is the trailing bytes; disturb the end of the payload.
-    tail = payload[-2]
-    flipped = "A" if tail != "A" else "B"
-    corrupted = payload[:-2] + flipped + payload[-1]
+    # The tag is the final 16 bytes. Flip one tag byte in the decoded bytes and
+    # re-encode, so the change cannot land only on discarded Base64 padding bits
+    # (the failure mode of mutating the trailing Base64 character directly).
+    raw = bytearray(base64.b64decode(payload, altchars=b"-_", validate=True))
+    raw[-1] ^= 0x01
+    corrupted = base64.urlsafe_b64encode(bytes(raw)).decode("ascii")
     with pytest.raises(SecretDecryptionError):
         handler.decrypt(_with_payload(corrupted), name="db_password")
 
